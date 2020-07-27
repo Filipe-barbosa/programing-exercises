@@ -1,0 +1,93 @@
+<html>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <body style="text-align: center;">
+        <h1 style="text-align: center;margin-top: 40px; margin-bottom: 20px;">
+            Contagem regressiva!
+        </h1>
+        <div id="initial-screen" class="visible">   <!--como vc redimencionou sua lable aqui, tenho praticamente a mesma coisa mas a minha eta grande demais  -->
+            <div>
+                <label for="text">Tempo:</label>
+                <input type="text" name="time">
+                <button type="button" name="start">Inicar</button>
+            </div>    
+        </div>
+        <div id="countdown-screen" class="d-none">
+            <img src="https://thumbs.gfycat.com/SelfreliantClutteredBlackpanther-max-1mb.gif">
+            <div id="remaining-time"></div>        
+        </div>
+        <div id="final-screen" class="d-none">
+            <img src="https://thumbs.gfycat.com/DifferentDimpledHamster-max-1mb.gif">
+            <div>
+                <button type="button" name="reset" style="margin-top: 5px;">Resetar</button>
+            </div>
+        </div>
+    </body>
+    <script>        
+        var shouldRun = false; // por que essa variável iniciando em true nesse ponto, qual
+        function start() {
+            const totalTime = parseInt(document.getElementsByName("time")[0].value); // por que esse getelementby name, tentei replicar mas debugando vi que o .value fica nao declarado nas nao vi vc declarando ele em lugar nenhum aqui
+            shouldRun = true;
+            if (!totalTime) { // o que faz esse !
+                alert("Valor de tempo inválido");
+                return;
+            }
+            var elapsedTime = 0;
+            const update = () => {
+                if (!shouldRun) {
+                    return;
+                }
+                setScreen('countdown-screen'); 
+                const remainingTime = Math.max(totalTime - elapsedTime, 0);// por que voCe precisa de um metodos para discubrir o maior desses 2 numero ?
+                const nonRedValue = Math.ceil(255 * remainingTime / totalTime); //
+                document.body.style.background = `rgb(${nonRedValue}, 255, ${nonRedValue})`;
+                if (remainingTime > 0) {
+                    const displayText = remainingTime == 1 ? "Falta 1 segundo" : `Faltam ${remainingTime} segundos`;
+                    document.getElementById("remaining-time").innerHTML = displayText;
+                    elapsedTime++;
+                    setTimeout(update.bind(this), 1000);// nao entendi muito bem passar o "update" como parametreo na settimeout e o "this".  
+                } else {
+                    setScreen('final-screen');
+                    document.getElementById("remaining-time").innerHTML = "Fim!";
+                }
+            }
+            update();
+        }
+
+        function reset() {
+            shouldRun = false;
+            document.getElementById("remaining-time").innerHTML = "";
+            document.body.style.background = "rgb(255, 255, 255)";
+            document.getElementsByName("time")[0].value = "";
+            setScreen('initial-screen');
+        }
+        // essa função setscreem nao consegui varre o funcionamento dela poderia explicar o sentido dela ?
+        const screenIds = ['initial-screen', 'countdown-screen', 'final-screen'];
+        function setScreen(screenId) {
+            if (screenIds.indexOf(screenId) == -1) {
+                return;
+            }
+            for (i = 0; i < screenIds.length; i++) {
+                const currentScreenId = screenIds[i];
+                if (currentScreenId == screenId) {
+                    setVisible(currentScreenId);
+                } else {
+                    setInvisible(currentScreenId);
+                }
+            }
+        }
+
+        function setVisible(elementId) {
+            document.getElementById(elementId).className = "";
+        }
+
+        function setInvisible(elementId) {
+            document.getElementById(elementId).className = "d-none";
+        }
+
+        window.onload = function () {
+            document.getElementsByName("start")[0].onclick = start;
+            document.getElementsByName("reset")[0].onclick = reset;
+
+        }
+    </script>
+</html>
